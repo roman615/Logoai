@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogoAI - Fast and Easy Logo Creation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #f0f0f0; }
+    .logo { font-size: 1.6rem; font-weight: 900; }
+    .logo-blue { color: #22D3EE; }
+    .logo-pink { color: #EC4899; }
+    .sign-in { background: #6366F1; color: white; border: none; border-radius: 10px; padding: 0.55rem 1.3rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .hero { position: relative; text-align: center; padding: 3.5rem 1.5rem 2.5rem; overflow: hidden; }
+    .emoji { position: absolute; pointer-events: none; }
+    h1 { font-size: 2.8rem; font-weight: 900; line-height: 1.1; margin: 0 0 1rem; }
+    .cyan { color: #22D3EE; }
+    .gradient { background: linear-gradient(90deg, #7C3AED, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .desc { color: #6B7280; font-size: 1rem; max-width: 320px; margin: 0 auto 2rem; line-height: 1.6; }
+    .input-box { background: #f9f9f9; border-radius: 18px; padding: 1.2rem; max-width: 380px; margin: 0 auto; box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+    .input-box input { width: 100%; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.9rem; margin-bottom: 0.8rem; outline: none; background: white; }
+    .gen-btn { width: 100%; background: linear-gradient(90deg, #22D3EE, #6366F1, #EC4899); color: white; border: none; border-radius: 12px; padding: 0.9rem; font-size: 1rem; font-weight: 700; cursor: pointer; }
+    .success { color: #22D3EE; margin-top: 0.8rem; font-weight: 600; font-size: 0.9rem; }
+    .how { padding: 3rem 1.5rem; text-align: center; background: #fafafa; }
+    .how h2 { font-size: 2.2rem; font-weight: 900; margin-bottom: 2.5rem; color: #111; }
+    .step { margin-bottom: 2.5rem; }
+    .step-emoji { font-size: 2.8rem; margin-bottom: 0.4rem; }
+    .step-num { font-size: 2.2rem; font-weight: 900; color: #22D3EE; line-height: 1; }
+    .step-title { font-size: 1.2rem; font-weight: 800; color: #111; margin: 0.2rem 0; }
+    .step-desc { color: #6B7280; font-size: 0.95rem; }
+    .cta { margin: 2rem 1.2rem; border-radius: 22px; background: linear-gradient(135deg, #7C3AED, #EC4899); padding: 3rem 1.5rem; text-align: center; color: white; }
+    .cta h2 { font-size: 2.2rem; font-weight: 900; margin: 0 0 1rem; }
+    .cta p { opacity: 0.9; margin-bottom: 2rem; line-height: 1.6; }
+    .cta-btn { background: white; color: #7C3AED; border: none; border-radius: 14px; padding: 1rem 2.2rem; font-size: 1rem; font-weight: 800; cursor: pointer; }
+    footer { text-align: center; padding: 2rem; color: #9CA3AF; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function App() {
+      const [prompt, setPrompt] = useState("");
+      const [generated, setGenerated] = useState(false);
+
+      return (
+        <div>
+          <nav className="nav">
+            <div className="logo">
+              <span className="logo-blue">Logo</span>
+              <span className="logo-pink">AI</span>
+            </div>
+            <button className="sign-in">Sign In</button>
+          </nav>
+
+          <section className="hero">
+            <span className="emoji" style={{top:"12%",left:"6%",fontSize:"2.4rem",opacity:0.3}}>🎨</span>
+            <span className="emoji" style={{top:"38%",left:"4%",fontSize:"2rem",opacity:0.28}}>🚀</span>
+            <span className="emoji" style={{top:"18%",right:"6%",fontSize:"2.4rem",opacity:0.3}}>🎸</span>
+            <span className="emoji" style={{top:"6%",left:"44%",fontSize:"1.8rem",opacity:0.38}}>✨</span>
+            <span className="emoji" style={{top:"42%",right:"5%",fontSize:"2rem",opacity:0.28}}>🎭</span>
+            <span className="emoji" style={{top:"8%",right:"22%",fontSize:"1.7rem",opacity:0.32}}>⭐</span>
+
+            <h1>
+              Fast and Easy<br />
+              <span className="cyan">Logo </span>
+              <span className="gradient">Creation</span>
+            </h1>
+
+            <p className="desc">Create stunning logos for your brand in seconds with AI. No design experience needed.</p>
+
+            <div className="input-box">
+              <input
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="Describe your logo (e.g., 'Modern tech startup')"
+              />
+              <button className="gen-btn" onClick={() => prompt.trim() && setGenerated(true)}>
+                ✦ Generate
+              </button>
+              {generated && <p className="success">✅ Generating your logo...</p>}
+            </div>
+          </section>
+
+          <section className="how">
+            <h2>How It Works</h2>
+            {[
+              {emoji:"✍️", num:"1", title:"Describe", desc:"Tell us about your brand and vision"},
+              {emoji:"✨", num:"2", title:"Generate", desc:"AI creates unique logo concepts"},
+              {emoji:"🎨", num:"3", title:"Customize", desc:"Tweak colors, fonts and styles"},
+              {emoji:"⬇️", num:"4", title:"Download", desc:"Get high-quality files ready to use"},
+            ].map((s, i) => (
+              <div key={i} className="step">
+                <div className="step-emoji">{s.emoji}</div>
+                <div className="step-num">{s.num}</div>
+                <div className="step-title">{s.title}</div>
+                <div className="step-desc">{s.desc}</div>
+              </div>
+            ))}
+          </section>
+
+          <section className="cta">
+            <h2>Ready to Create?</h2>
+            <p>Join thousands of creators and businesses using LogoAI to design stunning logos</p>
+            <button className="cta-btn">Get Started Free</button>
+          </section>
+
+          <footer>made by roman</footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
