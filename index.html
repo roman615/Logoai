@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LogoAI - Fast and Easy Logo Creation</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid #f0f0f0; position: sticky; top: 0; background: white; z-index: 10; }
+    .logo { font-size: 1.6rem; font-weight: 900; }
+    .logo-blue { color: #22D3EE; }
+    .logo-pink { color: #EC4899; }
+    .sign-in { background: #6366F1; color: white; border: none; border-radius: 10px; padding: 0.55rem 1.3rem; font-weight: 700; font-size: 0.95rem; cursor: pointer; }
+    .hero { position: relative; text-align: center; padding: 3.5rem 1.5rem 2.5rem; overflow: hidden; }
+    .emoji { position: absolute; pointer-events: none; }
+    h1 { font-size: 2.8rem; font-weight: 900; line-height: 1.1; margin: 0 0 1rem; }
+    .cyan { color: #22D3EE; }
+    .gradient-text { background: linear-gradient(90deg, #7C3AED, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .desc { color: #6B7280; font-size: 1rem; max-width: 320px; margin: 0 auto 2rem; line-height: 1.6; }
+    .input-box { background: #f9f9f9; border-radius: 18px; padding: 1.2rem; max-width: 420px; margin: 0 auto; box-shadow: 0 2px 16px rgba(0,0,0,0.07); }
+    .input-box input, .input-box textarea { width: 100%; border: 1.5px solid #e5e7eb; border-radius: 10px; padding: 0.85rem 1rem; font-size: 0.9rem; margin-bottom: 0.8rem; outline: none; background: white; font-family: inherit; resize: none; }
+    .input-box input:focus, .input-box textarea:focus { border-color: #6366F1; }
+    .gen-btn { width: 100%; background: linear-gradient(90deg, #22D3EE, #6366F1, #EC4899); color: white; border: none; border-radius: 12px; padding: 0.9rem; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .api-section { background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 12px; padding: 0.9rem; margin-bottom: 0.8rem; }
+    .api-section label { font-size: 0.8rem; font-weight: 700; color: #92400e; display: block; margin-bottom: 0.4rem; }
+    .api-section input { margin-bottom: 0 !important; border-color: #fde68a !important; font-size: 0.8rem !important; padding: 0.6rem 0.8rem !important; }
+    .result-box { margin-top: 1.2rem; border-radius: 14px; overflow: hidden; border: 1.5px solid #e5e7eb; background: white; }
+    .result-box .result-header { background: linear-gradient(90deg, #7C3AED, #EC4899); padding: 0.7rem 1rem; color: white; font-weight: 700; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+    .result-body { padding: 1rem; }
+    .download-btn { background: white; color: #7C3AED; border: none; border-radius: 8px; padding: 0.3rem 0.8rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; }
+    .error-msg { color: #DC2626; font-size: 0.85rem; margin-top: 0.6rem; background: #FEF2F2; padding: 0.6rem; border-radius: 8px; }
+    .loading { color: #6366F1; font-size: 0.9rem; margin-top: 0.8rem; font-weight: 600; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .how { padding: 3rem 1.5rem; text-align: center; background: #fafafa; }
+    .how h2 { font-size: 2.2rem; font-weight: 900; margin-bottom: 2.5rem; color: #111; }
+    .step { margin-bottom: 2.5rem; }
+    .step-emoji { font-size: 2.8rem; margin-bottom: 0.4rem; }
+    .step-num { font-size: 2.2rem; font-weight: 900; color: #22D3EE; line-height: 1; }
+    .step-title { font-size: 1.2rem; font-weight: 800; color: #111; margin: 0.2rem 0; }
+    .step-desc { color: #6B7280; font-size: 0.95rem; }
+    .cta { margin: 2rem 1.2rem; border-radius: 22px; background: linear-gradient(135deg, #7C3AED, #EC4899); padding: 3rem 1.5rem; text-align: center; color: white; }
+    .cta h2 { font-size: 2.2rem; font-weight: 900; margin: 0 0 1rem; }
+    .cta p { opacity: 0.9; margin-bottom: 2rem; line-height: 1.6; }
+    .cta-btn { background: white; color: #7C3AED; border: none; border-radius: 14px; padding: 1rem 2.2rem; font-size: 1rem; font-weight: 800; cursor: pointer; }
+    footer { text-align: center; padding: 2rem; color: #9CA3AF; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    async function generateLogo(prompt, apiKey) {
+      const systemPrompt = `You are a professional logo designer. When given a logo description, respond ONLY with a complete, beautiful SVG logo. 
+Rules:
+- Return ONLY the SVG code, nothing else. No explanation, no markdown, no backticks.
+- SVG must be 400x400 viewBox
+- Use vibrant, professional colors
+- Include the brand name or initials prominently
+- Make it modern, clean and impressive
+- Use gradients, shapes and typography creatively
+- The SVG must be self-contained and renderable`;
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-6",
+          max_tokens: 2000,
+          system: systemPrompt,
+          messages: [{ role: "user", content: `Create a logo for: ${prompt}` }]
+        })
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error?.message || "API error");
+      }
+
+      const data = await response.json();
+      return data.content[0].text;
+    }
+
+    function App() {
+      const [prompt, setPrompt] = useState("");
+      const [apiKey, setApiKey] = useState("");
+      const [loading, setLoading] = useState(false);
+      const [svgResult, setSvgResult] = useState("");
+      const [error, setError] = useState("");
+
+      const handleGenerate = async () => {
+        if (!prompt.trim()) { setError("Please describe your logo first!"); return; }
+        if (!apiKey.trim()) { setError("Please enter your Anthropic API key!"); return; }
+        setError("");
+        setLoading(true);
+        setSvgResult("");
+        try {
+          const svg = await generateLogo(prompt, apiKey.trim());
+          setSvgResult(svg);
+        } catch(e) {
+          setError("Error: " + e.message + " — Check your API key and try again.");
+        }
+        setLoading(false);
+      };
+
+      const downloadSVG = () => {
+        const blob = new Blob([svgResult], {type: "image/svg+xml"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "logo.svg"; a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      return (
+        <div>
+          <nav className="nav">
+            <div className="logo">
+              <span className="logo-blue">Logo</span>
+              <span className="logo-pink">AI</span>
+            </div>
+            <button className="sign-in">Sign In</button>
+          </nav>
+
+          <section className="hero">
+            <span className="emoji" style={{top:"12%",left:"6%",fontSize:"2.4rem",opacity:0.3}}>🎨</span>
+            <span className="emoji" style={{top:"38%",left:"4%",fontSize:"2rem",opacity:0.28}}>🚀</span>
+            <span className="emoji" style={{top:"18%",right:"6%",fontSize:"2.4rem",opacity:0.3}}>🎸</span>
+            <span className="emoji" style={{top:"6%",left:"44%",fontSize:"1.8rem",opacity:0.38}}>✨</span>
+            <span className="emoji" style={{top:"42%",right:"5%",fontSize:"2rem",opacity:0.28}}>🎭</span>
+            <span className="emoji" style={{top:"8%",right:"22%",fontSize:"1.7rem",opacity:0.32}}>⭐</span>
+
+            <h1>
+              Fast and Easy<br />
+              <span className="cyan">Logo </span>
+              <span className="gradient-text">Creation</span>
+            </h1>
+            <p className="desc">Create stunning logos for your brand in seconds with AI. No design experience needed.</p>
+
+            <div className="input-box">
+              <div className="api-section">
+                <label>🔑 Your Anthropic API Key (private, stays in your browser)</label>
+                <input
+                  type="password"
+                  value={apiKey}
+                  onChange={e => setApiKey(e.target.value)}
+                  placeholder="sk-ant-api03-..."
+                />
+              </div>
+
+              <textarea
+                rows={3}
+                value={prompt}
+                onChange={e => setPrompt(e.target.value)}
+                placeholder="Describe your logo (e.g., 'Modern tech startup called NovaTech in blue and purple')"
+              />
+
+              <button className="gen-btn" onClick={handleGenerate} disabled={loading}>
+                {loading ? "⏳ Generating..." : "✦ Generate Logo"}
+              </button>
+
+              {loading && <p className="loading">✨ Claude is designing your logo...</p>}
+              {error && <p className="error-msg">❌ {error}</p>}
+
+              {svgResult && (
+                <div className="result-box">
+                  <div className="result-header">
+                    <span>✅ Your Logo is Ready!</span>
+                    <button className="download-btn" onClick={downloadSVG}>⬇️ Download SVG</button>
+                  </div>
+                  <div className="result-body" dangerouslySetInnerHTML={{__html: svgResult}} />
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className="how">
+            <h2>How It Works</h2>
+            {[
+              {emoji:"✍️", num:"1", title:"Describe", desc:"Tell us about your brand and vision"},
+              {emoji:"✨", num:"2", title:"Generate", desc:"AI creates unique logo concepts"},
+              {emoji:"🎨", num:"3", title:"Customize", desc:"Tweak colors, fonts and styles"},
+              {emoji:"⬇️", num:"4", title:"Download", desc:"Get high-quality files ready to use"},
+            ].map((s, i) => (
+              <div key={i} className="step">
+                <div className="step-emoji">{s.emoji}</div>
+                <div className="step-num">{s.num}</div>
+                <div className="step-title">{s.title}</div>
+                <div className="step-desc">{s.desc}</div>
+              </div>
+            ))}
+          </section>
+
+          <section className="cta">
+            <h2>Ready to Create?</h2>
+            <p>Join thousands of creators and businesses using LogoAI to design stunning logos</p>
+            <button className="cta-btn">Get Started Free</button>
+          </section>
+
+          <footer>made by roman</footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
